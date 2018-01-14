@@ -1,10 +1,15 @@
 // @flow
 import React, { Component } from 'react';
+import actions from "./store/actions"
+import { connect } from "react-redux";
 import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
   render() {
+    console.log(this.props);
+    this.props.dispatch(actions.trainIncoming({ ETA: new Date() }))
+    
     return (
       <div className="App">
         <header className="App-header">
@@ -19,4 +24,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect()(App);
