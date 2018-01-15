@@ -35,54 +35,50 @@ describe("reminderEpic", () => {
     ETA.setHours(ETA.getHours() + 2);
     const payload = { id: 123, ETA };
     const trainIncomingAction = trainIncoming(payload);
-    const NewETA = new Date();
-    NewETA.setHours(NewETA.getHours() + 1);
-    const reminderAction = reminder({
-      ...payload,
-      ETA: NewETA
-    });
+    const getReminder = timeLeft => reminder({ ...payload, timeLeft });
+    const minsToMs = min => min * 60 * 1000;
+    const times = [60, 45, 30, 15];
+    const reminderActions = times.map(time => getReminder(time));
 
-    const NewETA2 = new Date();
-    NewETA2.setMinutes(NewETA2.getMinutes() + 30);
-    const reminderAction2 = reminder({
-      ...payload,
-      ETA: NewETA2
-    });
+    const res = [trainIncomingAction, reminderActions[0]];
 
     store.dispatch(trainIncomingAction);
 
-    clock.setTimeout(() => {
-      expect(store.getActions()).toEqual([trainIncomingAction, reminderAction]);
-    }, 60 * 60 * 1001);
-    clock.runToLast();
-    clock.setTimeout(() => {
-      expect(store.getActions()).toEqual([trainIncomingAction, reminderAction, reminderAction2]);
-      done();
-    }, 1.5 * 60 * 60 * 1001);
-    clock.runToLast();
+    expect(store.getActions()).not.toEqual([]);
+
+    clock.tick(minsToMs(60));
+
+    expect(store.getActions()).not.toEqual([trainIncomingAction]);
+    expect(store.getActions()).toEqual(res);
+    res.push(reminderActions[1]);
+
+    clock.tick(minsToMs(15));
+
+    expect(store.getActions()).toEqual(res);
+
+    expect(store.getActions()).not.toEqual([trainIncoming, reminderActions[0]]);
+
+    clock.tick(minsToMs(15));
+
+    res.push(reminderActions[2]);
+    expect(store.getActions()).toEqual(res);
+
+    clock.tick(minsToMs(15));
+
+    res.push(reminderActions[3]);
+    expect(store.getActions()).toEqual(res);
+    done();
   });
 
   it("testing take", done => {
     store.dispatch({ type: "SET_STATION" });
-    // button.click id => dipsatch SET_STATION
-    // reducer(current = id)
 
-    // ofType SET_STATION
-    // (obs, time) => obs.filter (diff = ETA - Date >= time)
-    // delay(diff)
-    // didn't id change?
-    // filter (id === current)
-    // map({ reminder })
-    // takeUntil(action$ ofType 'NOTIFICATION_DISABLED' && action$.id === state.current.id)
+    expect(store.getActions()).toEqual([
+      { type: "START" },
+      { type: "END" },
+      { type: "START" }
+    ]);
 
-    // clock.setTimeout(() => {
-    //   console.log(store.getActions());
-
-    //   done();
-    // }, 60 * 60 * 1001);
-    // clock.runToLast();
-    expect(store.getActions()).toEqual([{ type: "START" }, { type: "END" }, { type: "START" }]);
-    
     done();
   });
 });

@@ -20,6 +20,8 @@ import { ofType } from "redux-observable-adapter-xstream";
 import delay from "xstream/extra/delay";
 import xs, { Stream } from "xstream";
 import concat from "xstream/extra/concat";
+import flattenConcurrently from "xstream/extra/flattenConcurrently";
+import { create } from "domain";
 
 export const testFirstEpic = action$ =>
   action$
@@ -33,33 +35,35 @@ export const testFirstEpic = action$ =>
  * @param {Stream} action$
  */
 export const reminderEpic = (action$ /*: * */) => {
-  const hour = 60 * 60 * 1000;
-  const HalfHourReminderDate = new Date();
+  const hour = 60;
+  const minsToMs = min => min * 60 * 1000;
+  const createReminder = ({ payload }, timeLeft) =>
+    actions.reminder({ ...payload, timeLeft });
+  const firstTime = hour;
+  const secondTime = hour - (hour / 4);
+  const thirdTime = hour / 2;
+  const fourthTime = hour / 4;
+  const times = [firstTime, secondTime, thirdTime, fourthTime];
+  const mapTimes = action => times.map(time => createReminder(action, time));
+  const delayReminderAction = action =>
+    xs
+      .of(action)
+      .compose(
+        delay(
+          minsToMs(
+            action.payload.timeLeft < 60
+              ? 15
+              : 60
+          )
+        )
+      );
+  const remindersStream = actions => actions.map(delayReminderAction);
 
-  const s = action$
+  return action$
     .filter(ofType(actions.trainIncoming().type))
-    .map(action => {
-      console.log(action);
-
-      HalfHourReminderDate.setHours(action.payload.ETA.getHours() - 2);
-      HalfHourReminderDate.setMinutes(30);
-      return action;
-    })
-    .compose(delay(hour));
-
-  return xs
-    .merge(
-      s,
-      xs
-        .of({ payload: { final: true, ETA: HalfHourReminderDate } })
-        .compose(delay(1.5 * hour))
-    )
-    .map(action =>
-      actions.reminder({
-        ...action.payload,
-        ETA: action.payload.final ? action.payload.ETA : new Date()
-      })
-    );
+    .map(action => mapTimes(action))
+    .map(actionS => concat(...remindersStream(actionS)))
+    .flatten();
 };
 
 // .takeUntil(action$.ofType(FETCH_USER_CANCELLED))
