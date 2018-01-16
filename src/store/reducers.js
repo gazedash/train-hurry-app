@@ -9,38 +9,24 @@ import actions from "./actions";
 const users = (state = [], action) => {
   switch (action.type) {
     case actions.reminder().type:
-    console.log(action);
-    
+      console.log(action);
+
     //   return uniq([...state, ...action.payload]);
     default:
       return state;
   }
 };
-const albums = (state = [], action) => {
-  switch (action.type) {
-    case actions.reminder().type:
-    //   return uniq([...state, ...action.payload.albums]);
-    default:
-      return state;
-  }
-};
-const photos = (state = [], action) => {
-  switch (action.type) {
-    case actions.reminder().type:
-    //   return uniq([...state, ...action.payload.photos]);
-    default:
-      return state;
-  }
-};
 
-const current = (state = {}, action) => {
+const reminder = (state = {}, action) => {
   switch (action.type) {
     case actions.reminder().type:
       // on card click, set current userId
-      return { userId: action.payload.userId };
+      return action.payload;
+    case actions.cleanReminder().type:
+      return {};
     default:
       return state;
   }
 };
 
-export default combineReducers({ users, albums, photos, current });
+export default combineReducers({ users, reminder });
