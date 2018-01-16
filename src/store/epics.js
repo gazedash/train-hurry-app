@@ -20,8 +20,13 @@ import { ofType } from "redux-observable-adapter-xstream";
 import delay from "xstream/extra/delay";
 import xs, { Stream } from "xstream";
 import concat from "xstream/extra/concat";
-import flattenConcurrently from "xstream/extra/flattenConcurrently";
 import { create } from "domain";
+import {
+  createTimesFromArrival,
+  getDiff,
+  minsToMs,
+  createFinalTimesFromArrival
+} from "../utils/index";
 
 export const testFirstEpic = action$ =>
   action$
@@ -31,40 +36,52 @@ export const testFirstEpic = action$ =>
     // .do(a => console.log(a))
     .map(action => ({ type: "END" }));
 
+const actionTimesSelector = action => [action.payload.ETA, action.payload.now];
+const getTimes = action =>
+  createFinalTimesFromArrival(...actionTimesSelector(action));
+const delayReminderAction$ = (action, i) =>
+  xs.of(action).compose(delay(minsToMs(i > 0 ? 15 : getTimes(action)[0])));
+const extractMapTimes = action => {
+  const times = getTimes(action);
+  return times.length !== 1 ? times.slice(1) : times;
+};
+const remindersStream$ = actions => actions.map(delayReminderAction$);
+const createReminderActions = action =>
+  extractMapTimes(action).map(timeLeft =>
+    actions.reminder({ ...action.payload, timeLeft })
+  );
+const isTrainComingOrGone = action =>
+  getDiff(...actionTimesSelector(action)) >= 0;
+const arrConcat = actions => concat(...actions);
 /**
  * @param {Stream} action$
  */
-export const reminderEpic = (action$ /*: * */) => {
-  const hour = 60;
-  const minsToMs = min => min * 60 * 1000;
-  const createReminder = ({ payload }, timeLeft) =>
-    actions.reminder({ ...payload, timeLeft });
-  const firstTime = hour;
-  const secondTime = hour - (hour / 4);
-  const thirdTime = hour / 2;
-  const fourthTime = hour / 4;
-  const times = [firstTime, secondTime, thirdTime, fourthTime];
-  const mapTimes = action => times.map(time => createReminder(action, time));
-  const delayReminderAction = action =>
-    xs
-      .of(action)
-      .compose(
-        delay(
-          minsToMs(
-            action.payload.timeLeft < 60
-              ? 15
-              : 60
-          )
-        )
-      );
-  const remindersStream = actions => actions.map(delayReminderAction);
-
-  return action$
+export const reminderEpic = (action$ /*: * */) =>
+  action$
     .filter(ofType(actions.trainIncoming().type))
-    .map(action => mapTimes(action))
-    .map(actionS => concat(...remindersStream(actionS)))
+    // in case train already passed, it's tooo laaaate to laaatte
+    .filter(isTrainComingOrGone)
+    .map(createReminderActions)
+    .map(remindersStream$)
+    .map(arrConcat)
     .flatten();
-};
+
+// const geTtimes, dur =>  [...Array(times).keys()].map(a => dur)
+
+// const delayReminder$ = action =>
+//   xs.of(action).compose(delay(minsToMs(action.payload.timeLeft)));
+// const mapTimes = action =>
+//   action.payload.pattern.map(timeLeft =>
+//     actions.reminder({ ...action.payload, timeLeft })
+//   );
+// export const pomodoroEpic = (action$ /*: * */) => {
+//   return action$
+//     .filter(ofType(actions.trainIncoming().type))
+//     .map(mapTimes)
+//     .map(delayReminder$)
+//     .map(actions => concat(...actions))
+//     .flatten();
+// };
 
 // .takeUntil(action$.ofType(FETCH_USER_CANCELLED))
 // .do(r => console.log(r))
