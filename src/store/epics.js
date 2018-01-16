@@ -40,7 +40,8 @@ const actionTimesSelector = action => [action.payload.ETA, action.payload.now];
 const getTimes = action =>
   createFinalTimesFromArrival(...actionTimesSelector(action));
 const delayReminderAction$ = (action, i) =>
-  xs.of(action).compose(delay(100 * (i > 0 ? 15 : getTimes(action)[0])));
+// xs.of(action).compose(delay(minsToMs(i > 0 ? 15 : getTimes(action)[0])));
+  xs.of(action).compose(delay(1000 * (i > 0 ? 15 : getTimes(action)[0])));
 const extractMapTimes = action => {
   const times = getTimes(action);
   return times.length !== 1 ? times.slice(1) : times;

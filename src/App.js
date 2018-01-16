@@ -21,6 +21,9 @@ export class App extends Component {
   };
   componentDidMount() {
     this.props.dispatch(makeAction());
+    setTimeout(() => {
+      this.props.dispatch(actions.cleanReminder());
+    }, 2000);
   }
   cleanReminder = () => {
     this.props.dispatch(actions.cleanReminder());
