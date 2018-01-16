@@ -40,7 +40,7 @@ const actionTimesSelector = action => [action.payload.ETA, action.payload.now];
 const getTimes = action =>
   createFinalTimesFromArrival(...actionTimesSelector(action));
 const delayReminderAction$ = (action, i) =>
-// xs.of(action).compose(delay(minsToMs(i > 0 ? 15 : getTimes(action)[0])));
+  // xs.of(action).compose(delay(minsToMs(i > 0 ? 15 : getTimes(action)[0])));
   xs.of(action).compose(delay(1000 * (i > 0 ? 15 : getTimes(action)[0])));
 const extractMapTimes = action => {
   const times = getTimes(action);
@@ -65,7 +65,14 @@ export const reminderEpic = (action$ /*: * */) =>
     .map(createReminderActions)
     .map(remindersStream$)
     .map(arrConcat)
-    .flatten();
+    .flatten()
+    .endWhen(disableReminders(action$));
+
+export const disableReminders = (action$ /*: * */) =>
+  action$
+    .filter(ofType(actions.disableReminders().type))
+    // TODO: rename disableReminders to intentDisableReminders
+    .map(action => ({ type: "GOGO", action }));
 
 // const geTtimes, dur =>  [...Array(times).keys()].map(a => dur)
 
@@ -88,7 +95,9 @@ export const reminderEpic = (action$ /*: * */) =>
 // .do(r => console.log(r))
 
 const rootEpic = combineEpics(
-  reminderEpic
+  // reminders,
+  reminderEpic,
+  disableReminders
   //   pingEpic,
   //   fetchUserEpic
 );

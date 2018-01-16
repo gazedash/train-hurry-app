@@ -5,10 +5,12 @@ import { createAction } from "redux-actions";
 export const trainIncoming = createAction("TRAIN_INCOMING");
 export const reminder = createAction("REMINDER");
 export const cleanReminder = createAction("CLEAN_REMINDER");
+export const disableReminders = createAction("DISABLE_REMINDERS");
 
 const actions = {
   trainIncoming,
   reminder,
-  cleanReminder
+  cleanReminder,
+  disableReminders
 }
 export default actions;

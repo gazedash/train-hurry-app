@@ -20,6 +20,7 @@ export class App extends Component {
     }
   };
   componentDidMount() {
+    this.props.dispatch(actions.reminder())
     this.props.dispatch(makeAction());
     setTimeout(() => {
       this.props.dispatch(actions.cleanReminder());
@@ -30,6 +31,10 @@ export class App extends Component {
     setTimeout(() => {
       this.props.dispatch(makeAction());
     }, 500);
+  };
+  disableReminders = () => {
+    this.props.dispatch(actions.disableReminders());
+    this.props.dispatch(actions.cleanReminder());
   };
   render() {
     return (
@@ -55,6 +60,7 @@ export class App extends Component {
               ALERT {time} minutes to go<button onClick={this.cleanReminder}>
                 X
               </button>
+              <button onClick={this.disableReminders}>disable</button>
             </div>
           ))(this.props.reminder.timeLeft)}
       </div>
