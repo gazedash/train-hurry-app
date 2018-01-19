@@ -1,8 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import metroLogo from "../assets/metro.svg";
-// yes, i'm that lazy
-import { lighten } from "polished";
 
 export const Input = styled.input`
   border: 3px solid rgba(200, 200, 200, 0.3);
@@ -98,13 +96,13 @@ const TrainItemInner = styled.button`
 
   /* width: 100%; */
   background: #fff;
-  box-shadow: 0 1px 10px 0 rgba(0,0,0,0.3);
+  box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.3);
   padding: 10px;
   list-style: none;
 `;
 export const TrainItem = props => (
   <TrainItemInner {...props}>
-    <img src={metroLogo} width={25} height={25} />
+    <img alt={""} src={metroLogo} width={25} height={25} />
     <H3>{props.children}</H3>
   </TrainItemInner>
 );

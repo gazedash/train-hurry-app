@@ -1,6 +1,6 @@
 // @flow
 import React, { Component } from "react";
-import actions, { cleanReminder, toggleReminders } from "./store/actions";
+import actions from "./store/actions";
 import { connect } from "react-redux";
 import {
   AddressForm as AddressForm_,
@@ -13,7 +13,6 @@ import {
   AppTitle,
   FormLabel,
   H5,
-  Trans,
   RoundedElipsis,
   Toggle,
   Flex,
@@ -54,7 +53,7 @@ const Reminder = ({ time, clean = () => {}, disable = () => {} }) => (
   </Alert>
 );
 
-const TrainList = ({ items = [], selected = 0, onClick = () => {} }) => (
+const TrainList = ({ items = [], selected = 0, onClick = a => {} }) => (
   <TrainList_>
     {trains.map((item, i) => (
       <TrainItem
@@ -76,7 +75,8 @@ const ReminderToggle = ({ state, onClick = () => {} }) => (
 
 const trains = ["Baker st. 15:00", "Vostochnaya st. 03:30", "Vasilevskaya st. 20:00", "Mayakovskaya st. 19:00", "Shilo st. 21:00", "Aleksandrovskaya st. 22:00", "Krasnaya ploshad st. 05:00", "Gruzinskaya st. 12:00", "Baker st. 15:00", "Vostochnaya st. 03:30", "Vasilevskaya st. 20:00", "Mayakovskaya st. 19:00", "Shilo st. 21:00", "Aleksandrovskaya st. 22:00", "Krasnaya ploshad st. 05:00", "Gruzinskaya st. 12:00"];
 
-export class App extends Component {
+/*:: type State = { selected: number }; */
+export class App extends Component /*:: <*, State> */ {
   static defaultProps = {
     dispatch: () => {},
     makeAction: () => {},

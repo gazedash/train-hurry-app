@@ -22,19 +22,18 @@ import xs, { Stream } from "xstream";
 import concat from "xstream/extra/concat";
 import { create } from "domain";
 import {
-  createTimesFromArrival,
   getDiff,
   minsToMs,
   createFinalTimesFromArrival
 } from "../utils/index";
 
-export const testFirstEpic = action$ =>
-  action$
-    .filter(ofType("START"))
-    .take(1)
-    // .fold((acc, _) => acc + 1, 0)
-    // .do(a => console.log(a))
-    .map(action => ({ type: "END" }));
+// export const testFirstEpic = action$ =>
+//   action$
+//     .filter(ofType("START"))
+//     .take(1)
+//     // .fold((acc, _) => acc + 1, 0)
+//     // .do(a => console.log(a))
+//     .map(action => ({ type: "END" }));
 
 const actionTimesSelector = action => {
   console.log(action);
