@@ -13,7 +13,7 @@ const reminderEpic = (action$, store) =>
     .map(createReminderActions)
     // wrap actions in observables, delay them
     .map(remindersStream$)
-    // concat so they go like this T--X--Y--Z
+    // concat so they go like this T--X--Y--Z instead of emitting all at once
     .map(arrConcat)
     .flatten()
     // dispatch reminders only if they are enabled

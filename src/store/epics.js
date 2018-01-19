@@ -72,10 +72,14 @@ export const reminderEpic = (action$ /*: * */, store /*: * */) =>
     .filter(ofType(actions.trainIncoming().type))
     // in case train already passed, it's tooo laaaate to laaatte
     .filter(isTrainComingOrGone)
+    // for every train, few reminders (every 15 mins)
     .map(createReminderActions)
+    // wrap actions in observables, delay them
     .map(remindersStream$)
+    // concat so they go like this T--X--Y--Z instead of emitting all at once
     .map(arrConcat)
     .flatten()
+    // dispatch reminders only if they are enabled
     .filter(isEnabledReminders(store));
 
 // const geTtimes, dur =>  [...Array(times).keys()].map(a => dur)
