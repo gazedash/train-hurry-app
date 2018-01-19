@@ -36,21 +36,28 @@ export const testFirstEpic = action$ =>
     // .do(a => console.log(a))
     .map(action => ({ type: "END" }));
 
-const actionTimesSelector = action => [action.payload.ETA, action.payload.now];
+const actionTimesSelector = action => {
+  console.log(action);
+  return [action.payload.ETA, action.payload.now];
+};
 const getTimes = action =>
   createFinalTimesFromArrival(...actionTimesSelector(action));
-const delayReminderAction$ = (action, i) =>
+const delayReminderAction$ = (actions, i) =>
   // xs.of(action).compose(delay(minsToMs(i > 0 ? 15 : getTimes(action)[0])));
-  xs.of(action).compose(delay(1000 * (i > 0 ? 15 : getTimes(action)[0])));
+  concat(xs.of(actions[0]), xs.of(actions[1]).compose(delay(1000))).compose(
+    delay(500 * (i > 0 ? 15 : getTimes(actions[1])[0]))
+  );
 const extractMapTimes = action => {
   const times = getTimes(action);
   return times.length !== 1 ? times.slice(1) : times;
 };
-const remindersStream$ = actions => actions.map(delayReminderAction$);
+const remindersStream$ = actions =>
+  actions.map((actions, i) => delayReminderAction$(actions, i));
 const createReminderActions = action =>
-  extractMapTimes(action).map(timeLeft =>
+  extractMapTimes(action).map(timeLeft => [
+    actions.cleanReminder({ ...action.payload, timeLeft }),
     actions.reminder({ ...action.payload, timeLeft })
-  );
+  ]);
 const isTrainComingOrGone = action =>
   getDiff(...actionTimesSelector(action)) >= 0;
 const arrConcat = actions => concat(...actions);
@@ -66,6 +73,7 @@ export const reminderEpic = (action$ /*: * */) =>
     .map(remindersStream$)
     .map(arrConcat)
     .flatten()
+    // filter (isEnabledReminders(store.getState()))
     .endWhen(disableReminders(action$));
 
 export const disableReminders = (action$ /*: * */) =>
