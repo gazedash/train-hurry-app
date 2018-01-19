@@ -1,6 +1,6 @@
 // @flow
 import React, { Component } from "react";
-import actions, { cleanReminder, disableReminders } from "./store/actions";
+import actions, { cleanReminder, toggleReminders } from "./store/actions";
 import { connect } from "react-redux";
 import {
   AddressForm as AddressForm_,
@@ -13,7 +13,11 @@ import {
   AppTitle,
   FormLabel,
   H5,
-  Trans
+  Trans,
+  RoundedElipsis,
+  Toggle,
+  Flex,
+  MarginAuto
 } from "./components/StyledComponents";
 import "./App.css";
 
@@ -44,8 +48,8 @@ const Reminder = ({ time, clean = () => {}, disable = () => {} }) => (
       {time} minutes to go
     </div>
     <div>
-    <Button onClick={clean}>X</Button>
-    <Button onClick={disable}>disable</Button>
+      <Button onClick={clean}>X</Button>
+      <Button onClick={disable}>disable</Button>
     </div>
   </Alert>
 );
@@ -64,6 +68,12 @@ const TrainList = ({ items = [], selected = 0, onClick = () => {} }) => (
   </TrainList_>
 );
 
+const ReminderToggle = ({ state, onClick = () => {} }) => (
+  <RoundedElipsis onClick={onClick} disabled={state !== "enabled"}>
+    <Toggle />
+  </RoundedElipsis>
+);
+
 const trains = ["Baker st. 15:00", "Vasilevskaya st. 20:00"];
 
 export class App extends Component {
@@ -71,7 +81,7 @@ export class App extends Component {
     dispatch: () => {},
     makeAction: () => {},
     cleanReminder: () => {},
-    disableReminders: () => {},
+    toggleReminders: () => {},
     makeReminder: () => {},
     reminder: {
       // ETA: "2018-01-16T13:49:20.691Z",
@@ -95,12 +105,12 @@ export class App extends Component {
     const { makeAction, cleanReminder } = this.props;
     cleanReminder();
     setTimeout(() => {
-      makeAction();
+      // makeAction();
     }, 500);
   };
-  disableReminders = () => {
-    const { cleanReminder, disableReminders } = this.props;
-    disableReminders();
+  toggleReminders = () => {
+    const { cleanReminder, toggleReminders } = this.props;
+    toggleReminders();
     cleanReminder();
   };
   render() {
@@ -116,22 +126,31 @@ export class App extends Component {
         <Reminder
           time={this.props.reminder.timeLeft}
           clean={this.cleanReminder}
-          disable={this.disableReminders}
+          disable={this.toggleReminders}
         />
+        <MarginAuto>
+          <Flex>
+            <FormLabel noBg={true}>Reminders</FormLabel>{" "}
+            <ReminderToggle
+              onClick={this.toggleReminders}
+              state={this.props.settings.reminders.state}
+            />
+          </Flex>
+        </MarginAuto>
       </div>
     );
   }
 }
 
 function mapStateToProps(state) {
-  const { reminder } = state;
-  return { reminder };
+  const { reminder, settings } = state;
+  return { reminder, settings };
 }
 const mapDispatchToProps = {
   makeReminder: actions.reminder,
   makeAction,
   cleanReminder: actions.cleanReminder,
-  disableReminders: actions.disableReminders
+  toggleReminders: actions.toggleReminders
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

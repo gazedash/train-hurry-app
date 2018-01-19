@@ -61,10 +61,13 @@ const createReminderActions = action =>
 const isTrainComingOrGone = action =>
   getDiff(...actionTimesSelector(action)) >= 0;
 const arrConcat = actions => concat(...actions);
+const isEnabledRemindersSelector = store =>
+  store.getState().settings.reminders.state === "enabled" ? true : false;
+const isEnabledReminders = store => () => isEnabledRemindersSelector(store);
 /**
  * @param {Stream} action$
  */
-export const reminderEpic = (action$ /*: * */) =>
+export const reminderEpic = (action$ /*: * */, store /*: * */) =>
   action$
     .filter(ofType(actions.trainIncoming().type))
     // in case train already passed, it's tooo laaaate to laaatte
@@ -73,14 +76,7 @@ export const reminderEpic = (action$ /*: * */) =>
     .map(remindersStream$)
     .map(arrConcat)
     .flatten()
-    // filter (isEnabledReminders(store.getState()))
-    .endWhen(disableReminders(action$));
-
-export const disableReminders = (action$ /*: * */) =>
-  action$
-    .filter(ofType(actions.disableReminders().type))
-    // TODO: rename disableReminders to intentDisableReminders
-    .map(action => ({ type: "GOGO", action }));
+    .filter(isEnabledReminders(store));
 
 // const geTtimes, dur =>  [...Array(times).keys()].map(a => dur)
 
@@ -104,8 +100,7 @@ export const disableReminders = (action$ /*: * */) =>
 
 const rootEpic = combineEpics(
   // reminders,
-  reminderEpic,
-  disableReminders
+  reminderEpic
   //   pingEpic,
   //   fetchUserEpic
 );

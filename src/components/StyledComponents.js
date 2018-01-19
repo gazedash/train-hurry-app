@@ -21,7 +21,7 @@ export const Label = styled.label`
 
 export const FormLabel = styled.label`
   text-transform: uppercase;
-  background: #fafafa;
+  background: ${props => (props.noBg ? "initial" : "#fafafa")};
   @media (max-width: 541px) {
     min-width: 66px;
   }
@@ -102,6 +102,9 @@ export const TrainItem = props => (
   </TrainItemInner>
 );
 export const TrainList = styled.ul`
+  @media (max-width: 541px) {
+    width: 100%;
+  }
   padding: 20px 0px;
   margin: 0;
 `;
@@ -109,4 +112,34 @@ export const TrainList = styled.ul`
 export const AppTitle = styled.h1`
   padding: 10px 20px 0px 20px;
   margin: 0;
+`;
+
+export const RoundedElipsis = styled.div`
+  justify-content: ${props => (props.disabled ? "flex-start" : "flex-end")};
+  display: flex;
+  background-color: #d5d5d5;
+  border-radius: 25px;
+  height: 28px;
+  width: 50px;
+  padding: 0px 3px;
+  align-self: center;
+
+  div {
+    background-color: ${props => (props.disabled ? "#f9f9f9" : "blue")};
+  }
+`;
+export const Toggle = styled.div`
+  align-self: center;
+  background-color: blue;
+  border-radius: 50%;
+  height: 24px;
+  width: 24px;
+`;
+
+export const Flex = styled.div`
+  display: flex;
+`;
+
+export const MarginAuto = styled.div`
+  margin: auto 0px 0px 0px;
 `;
