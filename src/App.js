@@ -1,7 +1,20 @@
 // @flow
 import React, { Component } from "react";
-import actions from "./store/actions";
+import actions, { cleanReminder, disableReminders } from "./store/actions";
 import { connect } from "react-redux";
+import {
+  AddressForm as AddressForm_,
+  Alert,
+  Input,
+  TrainItem,
+  TrainList as TrainList_,
+  Button,
+  Label,
+  AppTitle,
+  FormLabel,
+  H5,
+  Trans
+} from "./components/StyledComponents";
 import "./App.css";
 
 const makeAction = () => {
@@ -10,59 +23,101 @@ const makeAction = () => {
   return actions.trainIncoming({ ETA, now: new Date() });
 };
 
+const AddressForm = () => (
+  <AddressForm_>
+    <Label>
+      <FormLabel>From</FormLabel>
+      <Input />
+    </Label>
+
+    <Label>
+      <FormLabel>To</FormLabel>
+      <Input />
+    </Label>
+  </AddressForm_>
+);
+
+const Reminder = ({ time, clean = () => {}, disable = () => {} }) => (
+  <Alert shouldDisplay={!!time}>
+    <div>
+      <H5>ALERT</H5>
+      {time} minutes to go
+    </div>
+    <div>
+    <Button onClick={clean}>X</Button>
+    <Button onClick={disable}>disable</Button>
+    </div>
+  </Alert>
+);
+
+const TrainList = ({ items = [], selected = 0, onClick = () => {} }) => (
+  <TrainList_>
+    {trains.map((item, i) => (
+      <TrainItem
+        onClick={() => onClick(i)}
+        key={item}
+        selected={selected === i}
+      >
+        {item}
+      </TrainItem>
+    ))}
+  </TrainList_>
+);
+
+const trains = ["Baker st. 15:00", "Vasilevskaya st. 20:00"];
+
 export class App extends Component {
   static defaultProps = {
     dispatch: () => {},
+    makeAction: () => {},
+    cleanReminder: () => {},
+    disableReminders: () => {},
+    makeReminder: () => {},
     reminder: {
       // ETA: "2018-01-16T13:49:20.691Z",
       // now: "2018-01-16T13:33:20.691Z",
       timeLeft: null
-    }
+    },
+    trains
+  };
+  state = {
+    selected: 0
   };
   componentDidMount() {
-    this.props.dispatch(actions.reminder())
-    this.props.dispatch(makeAction());
+    const { makeAction, makeReminder, cleanReminder } = this.props;
+    makeReminder();
+    makeAction();
     setTimeout(() => {
-      this.props.dispatch(actions.cleanReminder());
+      // cleanReminder();
     }, 2000);
   }
   cleanReminder = () => {
-    this.props.dispatch(actions.cleanReminder());
+    const { makeAction, cleanReminder } = this.props;
+    cleanReminder();
     setTimeout(() => {
-      this.props.dispatch(makeAction());
+      makeAction();
     }, 500);
   };
   disableReminders = () => {
-    this.props.dispatch(actions.disableReminders());
-    this.props.dispatch(actions.cleanReminder());
+    const { cleanReminder, disableReminders } = this.props;
+    disableReminders();
+    cleanReminder();
   };
   render() {
     return (
       <div className="App">
-        <form>
-          <label>
-            From
-            <input />
-          </label>
-          <div>.</div>
-          <label>
-            To
-            <input />
-          </label>
-        </form>
-        <ul>
-          <li>* Baker st. 15:00</li>
-          <li>Vasilevskaya st. 20:00</li>
-        </ul>
-        {(time =>
-          time && (
-            <div>
-              ALERT {time} minutes to go<button onClick={this.cleanReminder}>
-                X
-              </button>
-              <button onClick={this.disableReminders}>disable</button>
-            </div>
-          ))(this.props.reminder.timeLeft)}
+        <AppTitle>HurryApp</AppTitle>
+        <AddressForm />
+        <TrainList
+          items={this.props.trains}
+          selected={this.state.selected}
+          onClick={selected => this.setState({ selected })}
+        />
+        <Reminder
+          time={this.props.reminder.timeLeft}
+          clean={this.cleanReminder}
+          disable={this.disableReminders}
+        />
       </div>
     );
   }
@@ -72,4 +127,11 @@ function mapStateToProps(state) {
   const { reminder } = state;
   return { reminder };
 }
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = {
+  makeReminder: actions.reminder,
+  makeAction,
+  cleanReminder: actions.cleanReminder,
+  disableReminders: actions.disableReminders
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
