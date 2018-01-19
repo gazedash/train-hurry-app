@@ -6,12 +6,13 @@ import { lighten } from "polished";
 
 export const Input = styled.input`
   border: 3px solid rgba(200, 200, 200, 0.3);
+  min-height: 21px;
   @media (max-width: 541px) {
     width: 100%;
   }
 `;
 
-export const Label = styled.label`
+export const Label = styled.div`
   display: flex;
   padding: 1px;
   @media (max-width: 541px) {
@@ -21,16 +22,21 @@ export const Label = styled.label`
 
 export const FormLabel = styled.label`
   text-transform: uppercase;
+  /* min-height: 32px; */
   background: ${props => (props.noBg ? "initial" : "#fafafa")};
   @media (max-width: 541px) {
     min-width: 66px;
   }
   color: #000;
-  padding: 5px;
+  padding: 2px 5px;
 `;
 
 export const AddressForm = styled.form`
   display: flex;
+  min-height: 32px;
+  @media (max-width: 541px) {
+    min-height: 66px;
+  }
   flex-wrap: wrap;
   padding-top: 20px;
 `;
@@ -46,6 +52,7 @@ export const Button = styled.button`
 `;
 
 export const Alert = styled.div`
+  min-height: 160px;
   border: 3px dashed blue;
   width: 450px;
   @media (max-width: 541px) {
@@ -53,7 +60,7 @@ export const Alert = styled.div`
   }
   opacity: 1;
   display: flex;
-  display: ${props => (props.shouldDisplay ? "flex" : "none")};
+  visibility: ${props => (props.shouldDisplay ? "visible" : "hidden")};
   box-sizing: border-box;
   padding: 20px;
   flex-direction: column;
@@ -88,10 +95,10 @@ const TrainItemInner = styled.button`
     width: 100%;
   }
   display: flex;
+
   /* width: 100%; */
   background: #fff;
-  box-shadow: ${props =>
-    !props.selected ? "0 3px 1px rgba(0, 0, 0, 0.3)" : null};
+  box-shadow: 0 1px 10px 0 rgba(0,0,0,0.3);
   padding: 10px;
   list-style: none;
 `;
@@ -105,8 +112,10 @@ export const TrainList = styled.ul`
   @media (max-width: 541px) {
     width: 100%;
   }
-  padding: 20px 0px;
-  margin: 0;
+
+  overflow: auto;
+  margin: 20px 0px;
+  padding: 0;
 `;
 
 export const AppTitle = styled.h1`
