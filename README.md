@@ -3,7 +3,7 @@
 It uses `redux-observable`, and `xstream`.
 The goal of this project is to practice reactive programming and TDD.
 
-```
+```js
 const reminderEpic = (action$, store) =>
   action$
     .filter(ofType(actions.trainIncoming().type))
