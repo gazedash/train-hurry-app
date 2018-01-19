@@ -2,6 +2,7 @@
   "name": "train-hurry-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://gazedash.github.io/train-hurry-app",
   "dependencies": {
     "polished": "^1.9.0",
     "ramda": "^0.25.0",
@@ -23,12 +24,15 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "devDependencies": {
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "flow-bin": "^0.63.1",
+    "gh-pages": "^1.1.0",
     "lolex": "^2.3.1"
   }
 }
