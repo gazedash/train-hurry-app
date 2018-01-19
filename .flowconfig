@@ -1,5 +1,6 @@
 [ignore]
 .*/.history/.*
+.*/node_modules/styled-components/.*
 [include]
 
 [libs]
