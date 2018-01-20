@@ -14,6 +14,8 @@ const actionTimesSelector = action => {
   return [action.payload.ETA, action.payload.now];
 };
 const getTimes = action =>
+  // generate array of numbers, which later will be mapped to reminder actions
+  // [timeLeft,60?,45?,30?,15?]
   createFinalTimesFromArrival(...actionTimesSelector(action));
 const delayReminderAction$ = (actions, i) =>
   // xs.of(action).compose(delay(minsToMs(i > 0 ? 15 : getTimes(action)[0])));
@@ -22,21 +24,25 @@ const delayReminderAction$ = (actions, i) =>
   );
 const extractMapTimes = action => {
   const times = getTimes(action);
+  // first time is the time left before first reminder, so no need to create action BEFORE reminders
   return times.length !== 1 ? times.slice(1) : times;
 };
 const remindersStream$ = actions =>
   actions.map((actions, i) => delayReminderAction$(actions, i));
 const createReminderActions = action =>
   extractMapTimes(action).map(timeLeft => [
+    // cleanReminder is needed to trigger animation
     actions.cleanReminder({ ...action.payload, timeLeft }),
     actions.reminder({ ...action.payload, timeLeft })
   ]);
 const isTrainComingOrGone = action =>
   getDiff(...actionTimesSelector(action)) >= 0;
+// helper function so I can do .map(arrConcat) instead of this
 const arrConcat = actions => concat(...actions);
 const isEnabledRemindersSelector = store =>
   store.getState().settings.reminders.state === "enabled" ? true : false;
 const isEnabledReminders = store => () => isEnabledRemindersSelector(store);
+
 /**
  * @param {Stream} action$
  */
