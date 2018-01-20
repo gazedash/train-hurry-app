@@ -32,8 +32,6 @@ const reminder = (state = {}, action) => {
     case actions.cleanReminder().type:
       return {};
     default:
-      console.log(action);
-
       return state;
   }
 };

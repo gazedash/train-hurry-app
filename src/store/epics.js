@@ -8,14 +8,9 @@ import delay from "xstream/extra/delay";
 import xs, { Stream } from "xstream";
 import concat from "xstream/extra/concat";
 import { create } from "domain";
-import {
-  getDiff,
-  minsToMs,
-  createFinalTimesFromArrival
-} from "../utils/index";
+import { getDiff, minsToMs, createFinalTimesFromArrival } from "../utils/index";
 
 const actionTimesSelector = action => {
-  console.log(action);
   return [action.payload.ETA, action.payload.now];
 };
 const getTimes = action =>
@@ -60,8 +55,6 @@ export const reminderEpic = (action$ /*: * */, store /*: * */) =>
     // dispatch reminders only if they are enabled
     .filter(isEnabledReminders(store));
 
-const rootEpic = combineEpics(
-  reminderEpic
-);
+const rootEpic = combineEpics(reminderEpic);
 
 export default rootEpic;
