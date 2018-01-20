@@ -13,7 +13,8 @@ import {
   RoundedElipsis,
   Toggle,
   Flex,
-  MarginAuto
+  MarginAuto,
+  AlertWrapper
 } from "./StyledComponents";
 
 export const AddressForm = () => (
@@ -31,16 +32,18 @@ export const AddressForm = () => (
 );
 
 export const Reminder = ({ time, clean = () => {}, disable = () => {} }) => (
-  <Alert shouldDisplay={!!time}>
-    <div>
-      <H5>ALERT</H5>
-      {time} minutes to go
-    </div>
-    <div>
-      <Button onClick={clean}>X</Button>
-      <Button onClick={disable}>disable</Button>
-    </div>
-  </Alert>
+  <AlertWrapper>
+    <Alert shouldDisplay={!!time}>
+      <div>
+        <H5>ALERT</H5>
+        {time} minutes to go
+      </div>
+      <div>
+        <Button onClick={clean}>X</Button>
+        <Button onClick={disable}>disable</Button>
+      </div>
+    </Alert>
+  </AlertWrapper>
 );
 
 export const TrainList = ({ items = [], selected = 0, onClick = a => {} }) => (

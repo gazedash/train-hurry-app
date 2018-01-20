@@ -2,10 +2,13 @@ import React from "react";
 import styled from "styled-components";
 import metroLogo from "../assets/metro.svg";
 
+// 736
+const deviceWidth = "541px";
+
 export const Input = styled.input`
   border: 3px solid rgba(200, 200, 200, 0.3);
   min-height: 21px;
-  @media (max-width: 541px) {
+  @media (max-width: ${deviceWidth}) {
     width: 100%;
   }
 `;
@@ -13,7 +16,7 @@ export const Input = styled.input`
 export const Label = styled.div`
   display: flex;
   padding: 1px;
-  @media (max-width: 541px) {
+  @media (max-width: ${deviceWidth}) {
     min-width: 100%;
   }
 `;
@@ -22,7 +25,7 @@ export const FormLabel = styled.label`
   text-transform: uppercase;
   /* min-height: 32px; */
   background: ${props => (props.noBg ? "initial" : "#fafafa")};
-  @media (max-width: 541px) {
+  @media (max-width: ${deviceWidth}) {
     min-width: 66px;
   }
   color: #000;
@@ -32,7 +35,7 @@ export const FormLabel = styled.label`
 export const AddressForm = styled.form`
   display: flex;
   min-height: 32px;
-  @media (max-width: 541px) {
+  @media (max-width: ${deviceWidth}) {
     min-height: 66px;
   }
   flex-wrap: wrap;
@@ -49,16 +52,24 @@ export const Button = styled.button`
   min-width: 50px;
 `;
 
+export const AlertWrapper = styled.div`
+  min-height: 171px;
+  @media (max-width: ${deviceWidth}) {
+    width: 100%;
+  }
+  width: fit-content;
+`;
+
 export const Alert = styled.div`
   min-height: 160px;
   border: 3px dashed blue;
   width: 450px;
-  @media (max-width: 541px) {
+  @media (max-width: ${deviceWidth}) {
     width: 100%;
   }
   opacity: 1;
   display: flex;
-  visibility: ${props => (props.shouldDisplay ? "visible" : "hidden")};
+  display: ${props => (props.shouldDisplay ? "flex" : "none")};
   box-sizing: border-box;
   padding: 20px;
   flex-direction: column;
@@ -89,7 +100,7 @@ export const H5 = styled.h5`
 const TrainItemInner = styled.button`
   border: ${props => (props.selected ? "3px solid blue" : "none")};
   width: 450px;
-  @media (max-width: 541px) {
+  @media (max-width: ${deviceWidth}) {
     width: 100%;
   }
   display: flex;
@@ -107,7 +118,7 @@ export const TrainItem = props => (
   </TrainItemInner>
 );
 export const TrainList = styled.ul`
-  @media (max-width: 541px) {
+  @media (max-width: ${deviceWidth}) {
     width: 100%;
   }
 
