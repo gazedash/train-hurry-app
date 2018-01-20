@@ -36,4 +36,29 @@ const reminder = (state = {}, action) => {
   }
 };
 
-export default combineReducers({ reminder, settings });
+const initialTrainState = [
+  "Baker st. 15:00",
+  "Vostochnaya st. 03:30",
+  "Vasilevskaya st. 20:00",
+  "Mayakovskaya st. 19:00",
+  "Shilo st. 21:00",
+  "Aleksandrovskaya st. 22:00",
+  "Krasnaya ploshad st. 05:00",
+  "Gruzinskaya st. 12:00",
+  "Brodskaya st. 15:00",
+  "Vishnevskaya st. 03:30",
+  "Miller st. 20:00",
+  "Perry st. 19:00",
+  "Imperatorskaya st. 21:00",
+  "Proletarskaya st. 22:00",
+  "Red square st. 05:00",
+  "Prague st. 12:00"
+];
+const trains = (state = initialTrainState, action) => {
+  switch (action.type) {
+    default:
+      return state;
+  }
+}
+
+export default combineReducers({ reminder, settings, trains });
