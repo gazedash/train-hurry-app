@@ -19,6 +19,7 @@ import {
   MarginAuto
 } from "./components/StyledComponents";
 import "./App.css";
+import { createSocketStreamAndSubscribe } from "./ws";
 
 const makeAction = () => {
   const ETA = new Date();
@@ -83,6 +84,7 @@ export class App extends Component /*:: <*, State> */ {
     cleanReminder: () => {},
     toggleReminders: () => {},
     makeReminder: () => {},
+    initWS: createSocketStreamAndSubscribe,
     reminder: {
       // ETA: "2018-01-16T13:49:20.691Z",
       // now: "2018-01-16T13:33:20.691Z",
@@ -94,9 +96,10 @@ export class App extends Component /*:: <*, State> */ {
     selected: 0
   };
   componentDidMount() {
-    const { makeAction, makeReminder, cleanReminder } = this.props;
-    makeReminder();
+    const { makeAction, makeReminder, cleanReminder, initWS } = this.props;
+    // makeReminder();
     makeAction();
+    // initWS({ next: makeAction })
     setTimeout(() => {
       // cleanReminder();
     }, 2000);
