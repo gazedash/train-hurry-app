@@ -113,8 +113,10 @@ export class App extends Component /*:: <*, State> */ {
   };
   toggleReminders = () => {
     const { cleanReminder, toggleReminders } = this.props;
+    if (this.props.settings.reminders.state === "enabled") {
+      cleanReminder();
+    }
     toggleReminders();
-    cleanReminder();
   };
   render() {
     return (
