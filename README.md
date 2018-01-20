@@ -3,6 +3,8 @@
 It uses `redux-observable`, and `xstream`.
 The goal of this project is to practice reactive programming and TDD.
 
+App connects to WebSocket server and on each emitted message dispatches trainIncoming action and reminders actions.
+
 ```js
 const reminderEpic = (action$, store) =>
   action$
