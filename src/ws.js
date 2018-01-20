@@ -1,7 +1,9 @@
 import SockJS from "sockjs-client";
 import xs from "xstream";
 
-export const WS_ENDPOINT = "http://0.0.0.0:9999/echo";
+export const WS_ENDPOINT = window.LOCAL_WS
+? "http://0.0.0.0:9999/echo"
+:  "https://train-node-ws.herokuapp.com/echo";
 
 export function createSocket(url) {
   return new SockJS(url ? url : WS_ENDPOINT);
