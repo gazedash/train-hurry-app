@@ -11,8 +11,6 @@ const initialState = {
 };
 function toggleReminders(reducerState) {
   const { states, state } = path(["reminders"], reducerState);
-  console.log(state,nth(0, states.filter(s => s !== state)[0]));
-  
   return nth(0, states.filter(s => s !== state));
 }
 const settings = (state = initialState, action) => {
@@ -27,7 +25,6 @@ const settings = (state = initialState, action) => {
 const reminder = (state = {}, action) => {
   switch (action.type) {
     case actions.reminder().type:
-      // on card click, set current userId
       return { ...state, ...action.payload };
     case actions.cleanReminder().type:
       return {};
@@ -59,6 +56,6 @@ const trains = (state = initialTrainState, action) => {
     default:
       return state;
   }
-}
+};
 
 export default combineReducers({ reminder, settings, trains });
