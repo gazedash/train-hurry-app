@@ -11,6 +11,7 @@ import {
   Reminder,
   BottomReminderToggle
 } from "./components/Components";
+import { pathOr } from "ramda";
 
 const makeAction = () => {
   const ETA = new Date();
@@ -65,7 +66,7 @@ export class App extends Component /*:: <*, State> */ {
         />
         <BottomReminderToggle
           onClick={this.toggleReminders}
-          state={this.props.settings.reminders.state}
+          state={pathOr(null, ['settings', 'reminders', 'state'], this.props)}
         />
       </div>
     );

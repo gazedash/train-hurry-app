@@ -1,7 +1,7 @@
 import configureMockStore from "redux-mock-store";
 import { createEpicMiddleware } from "redux-observable";
-import { trainIncoming, reminder } from "../actions";
-import { reminderEpic, testFirstEpic } from "../epics";
+import { trainIncoming, reminder, cleanReminder } from "../actions";
+import { reminderEpic } from "../epics";
 
 import lolex from "lolex";
 
@@ -11,9 +11,12 @@ import {
   getDiff,
   createFinalTimesFromArrival
 } from "../../utils/index";
+import reducers from "../reducers";
+import * as R from "ramda";
 
 // we have an action describing train arrival
 const minsToMs = min => min * 60 * 1000;
+const dt = 15 * 500 + 1001;
 // we need to test that epic is emitting reminders (60, 30, 15, 10, 5 mins to go)
 const epicMiddleware = createEpicMiddleware(reminderEpic, {
   adapter: xstreamAdapter
@@ -33,15 +36,17 @@ describe("reminderEpic", () => {
       times.push(diff);
     }
     // const times = [60, 45, 30, 15];
-    const reminderActions = times.map(timeLeft =>
+    const reminderActions = times.map(timeLeft => [
+      cleanReminder({ ...payload, timeLeft }),
       reminder({ ...payload, timeLeft })
-    );
+    ]);
     return { trainIncomingAction, reminderActions, times };
   }
 
   beforeEach(() => {
     clock = lolex.install();
-    store = mockStore();
+    store = mockStore(reducers({}, { type: "B" }));
+    // store.replaceReducer(reducers)
   });
 
   afterEach(() => {
@@ -53,37 +58,38 @@ describe("reminderEpic", () => {
     const ETA = new Date();
     ETA.setHours(ETA.getHours() + 1);
     ETA.setMinutes(1);
-    const { trainIncomingAction, reminderActions, times } = makeActions(
-      ETA,
-      new Date()
-    );
+    const {
+      trainIncomingAction,
+      reminderActions,
+      times
+    } = makeActions(ETA, new Date());
 
-    const res = [trainIncomingAction, reminderActions[0]];
+    const res = [trainIncomingAction, ...reminderActions[0]];
 
     store.dispatch(trainIncomingAction);
 
     expect(store.getActions()).not.toEqual([]);
 
-    clock.tick(minsToMs(1));
+    clock.tick(dt);
 
     expect(store.getActions()).not.toEqual([trainIncomingAction]);
     expect(store.getActions()).toEqual(res);
-    res.push(reminderActions[1]);
+    res.push(...reminderActions[1]);
 
-    clock.tick(minsToMs(15));
+    clock.tick(dt);
 
     expect(store.getActions()).toEqual(res);
 
     expect(store.getActions()).not.toEqual([trainIncoming, reminderActions[0]]);
 
-    clock.tick(minsToMs(15));
+    clock.tick(dt);
 
-    res.push(reminderActions[2]);
+    res.push(...reminderActions[2]);
     expect(store.getActions()).toEqual(res);
 
-    clock.tick(minsToMs(15));
+    clock.tick(dt);
 
-    res.push(reminderActions[3]);
+    res.push(...reminderActions[3]);
     expect(store.getActions()).toEqual(res);
     done();
   });
@@ -97,19 +103,19 @@ describe("reminderEpic", () => {
       new Date()
     );
 
-    const res = [trainIncomingAction, reminderActions[0]];
+    const res = [trainIncomingAction, ...reminderActions[0]];
 
     store.dispatch(trainIncomingAction);
 
     expect(store.getActions()).not.toEqual([]);
 
-    clock.tick(minsToMs(30));
+    clock.tick(dt * 2);
 
     expect(store.getActions()).not.toEqual([trainIncomingAction]);
     expect(store.getActions()).toEqual(res);
-    res.push(reminderActions[1]);
+    res.push(...reminderActions[1]);
 
-    clock.tick(minsToMs(15));
+    clock.tick(dt);
 
     expect(store.getActions()).toEqual(res);
 
@@ -127,26 +133,26 @@ describe("reminderEpic", () => {
       new Date()
     );
 
-    const res = [trainIncomingAction, reminderActions[0]];
+    const res = [trainIncomingAction, ...reminderActions[0]];
 
     store.dispatch(trainIncomingAction);
 
     expect(store.getActions()).not.toEqual([]);
 
     // clock.tick(minsToMs(30));
-    clock.tick(1);
+    clock.tick(dt / 2);
 
     // expect(store.getActions()).not.toEqual([trainIncomingAction]);
     expect(store.getActions()).toEqual(res);
-    res.push(reminderActions[1]);
+    res.push(...reminderActions[1]);
 
-    clock.tick(minsToMs(15));
+    clock.tick(dt);
 
     expect(store.getActions()).toEqual(res);
 
     expect(store.getActions()).not.toEqual([trainIncoming, reminderActions[0]]);
 
-    clock.tick(minsToMs(15));
+    clock.tick(dt);
     expect(store.getActions()).toEqual(res);
 
     done();
@@ -191,10 +197,10 @@ describe("reminderEpic", () => {
 
       expect(store.getActions()).not.toEqual([]);
 
-      clock.tick(minsToMs(hour * 60 + minute));
+      clock.tick((15 * 500 + 1000) * hour * 60 + minute * 100000);
       expect(store.getActions()).toEqual([
         trainIncomingAction,
-        ...reminderActions
+        ...R.flatten(reminderActions)
       ]);
       store.clearActions();
     });
