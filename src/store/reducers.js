@@ -1,11 +1,8 @@
 // @flow
 import { combineReducers } from "redux";
-// import { uniqWith } from "ramda";
 import actions from "./actions";
 import { assocPath, path, nth } from "ramda";
 
-// const isEqual = (v1, v2) => v1.id === v2.id;
-// const uniq = uniqWith(isEqual);
 const initialState = {
   reminders: {
     states: ["enabled", "disabled"],

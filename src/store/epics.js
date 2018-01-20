@@ -3,19 +3,6 @@
 import { combineEpics } from "redux-observable";
 import actions from "./actions";
 
-// const pingEpic = action$ =>
-// action$.ofType(actions.PING)
-//   .delay(1000) // Asynchronously wait 1000ms then continue
-//   .mapTo({ type: 'PONG' });
-
-// const fetchUserEpic = action$ =>
-// action$.ofType(actions.FETCH_USER)
-//   .mergeMap(action =>
-//     // ajax.getJSON(`https://api.github.com/users/${action.payload}`)
-//     //   .map(response => fetchUserFulfilled(response))
-//     {}
-//   );
-
 import { ofType } from "redux-observable-adapter-xstream";
 import delay from "xstream/extra/delay";
 import xs, { Stream } from "xstream";
@@ -26,14 +13,6 @@ import {
   minsToMs,
   createFinalTimesFromArrival
 } from "../utils/index";
-
-// export const testFirstEpic = action$ =>
-//   action$
-//     .filter(ofType("START"))
-//     .take(1)
-//     // .fold((acc, _) => acc + 1, 0)
-//     // .do(a => console.log(a))
-//     .map(action => ({ type: "END" }));
 
 const actionTimesSelector = action => {
   console.log(action);
@@ -81,31 +60,8 @@ export const reminderEpic = (action$ /*: * */, store /*: * */) =>
     // dispatch reminders only if they are enabled
     .filter(isEnabledReminders(store));
 
-// const geTtimes, dur =>  [...Array(times).keys()].map(a => dur)
-
-// const delayReminder$ = action =>
-//   xs.of(action).compose(delay(minsToMs(action.payload.timeLeft)));
-// const mapTimes = action =>
-//   action.payload.pattern.map(timeLeft =>
-//     actions.reminder({ ...action.payload, timeLeft })
-//   );
-// export const pomodoroEpic = (action$ /*: * */) => {
-//   return action$
-//     .filter(ofType(actions.trainIncoming().type))
-//     .map(mapTimes)
-//     .map(delayReminder$)
-//     .map(actions => concat(...actions))
-//     .flatten();
-// };
-
-// .takeUntil(action$.ofType(FETCH_USER_CANCELLED))
-// .do(r => console.log(r))
-
 const rootEpic = combineEpics(
-  // reminders,
   reminderEpic
-  //   pingEpic,
-  //   fetchUserEpic
 );
 
 export default rootEpic;
