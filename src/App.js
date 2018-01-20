@@ -74,8 +74,24 @@ const ReminderToggle = ({ state, onClick = () => {} }) => (
   </RoundedElipsis>
 );
 
-const trains = ["Baker st. 15:00", "Vostochnaya st. 03:30", "Vasilevskaya st. 20:00", "Mayakovskaya st. 19:00", "Shilo st. 21:00", "Aleksandrovskaya st. 22:00", "Krasnaya ploshad st. 05:00", "Gruzinskaya st. 12:00", "Baker st. 15:00", "Vostochnaya st. 03:30", "Vasilevskaya st. 20:00", "Mayakovskaya st. 19:00", "Shilo st. 21:00", "Aleksandrovskaya st. 22:00", "Krasnaya ploshad st. 05:00", "Gruzinskaya st. 12:00"];
-
+const trains = [
+  "Baker st. 15:00",
+  "Vostochnaya st. 03:30",
+  "Vasilevskaya st. 20:00",
+  "Mayakovskaya st. 19:00",
+  "Shilo st. 21:00",
+  "Aleksandrovskaya st. 22:00",
+  "Krasnaya ploshad st. 05:00",
+  "Gruzinskaya st. 12:00",
+  "Brodskaya st. 15:00",
+  "Vishnevskaya st. 03:30",
+  "Miller st. 20:00",
+  "Perry st. 19:00",
+  "Imperatorskaya st. 21:00",
+  "Proletarskaya st. 22:00",
+  "Red square st. 05:00",
+  "Prague st. 12:00"
+];
 /*:: type State = { selected: number }; */
 export class App extends Component /*:: <*, State> */ {
   static defaultProps = {
@@ -98,8 +114,8 @@ export class App extends Component /*:: <*, State> */ {
   componentDidMount() {
     const { makeAction, makeReminder, cleanReminder, initWS } = this.props;
     // makeReminder();
-    makeAction();
-    // initWS({ next: makeAction })
+    // makeAction();
+    initWS({ next: makeAction })
     setTimeout(() => {
       // cleanReminder();
     }, 2000);
