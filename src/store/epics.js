@@ -56,6 +56,9 @@ export const reminderEpic = (action$ /*: * */, store /*: * */) =>
     // wrap actions in observables, delay them
     .map(remindersStream$)
     // concat so they go like this T--X--Y--Z instead of emitting all at once
+    // .map().flatten() works like switchMap: discards previous event if new already came
+    // e.g. if user double clicks on dispatcher button, delayed events emitted by first click
+    // will be discarded
     .map(arrConcat)
     .flatten()
     // dispatch reminders only if they are enabled
